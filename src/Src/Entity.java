@@ -1,15 +1,12 @@
 package Src;
 
 public class Entity {
-	public float PosX = 0;
-	public float PosY = 0;
-	public float PosR = 0;
-	public float VecX = 10F;
-	public float VecY = 0;
-	public float VecR = 10;
+	public Vector Pos = new Vector(0,0);
+	public Vector Vec = new Vector(0,0);
+	public float Mass = 0;
 	public int Id = 0;
 	public RenderModel RenderModel;//The Model used for rendering
-	public CollModel CollModel;
+	public CollBox CollModel;
 	public Resouce[] res= new Resouce[10];//personal values
 	//Iron:used for hulls of ships
 	//Hydrogen:used for fuel
@@ -19,7 +16,7 @@ public class Entity {
 	public Entity(int id)
 	{
 		RenderModel = new ModelPlayer(5F);//Cube
-		CollModel = new CollModel(0,0,2.5F,2.5F);
+		CollModel = new CollBox(new CollBox(0,0,2.5F,2.5F));
 		for(int i = 0;i< res.length;++i)
 		{
 			res[i] = null;//Set them all to null
@@ -29,8 +26,8 @@ public class Entity {
 	public Entity(int id,float x,float y)
 	{
 		this(id);
-		this.PosX = x;
-		this.PosY = y;
+		this.Pos.X = x;
+		this.Pos.Y = y;
 	}
 	public void Update(World world)
 	{
@@ -39,15 +36,13 @@ public class Entity {
 	}
 	public void Intergrate(World world)
 	{
-		this.PosX += (float) (this.VecX * world.DeltaTime);
-		this.PosY += (float) (this.VecY * world.DeltaTime);
-		this.PosR += (float) (this.VecR * world.DeltaTime);
+		this.Pos.X += (float) (this.Vec.X * world.DeltaTime);
+		this.Pos.Y += (float) (this.Vec.Y * world.DeltaTime);
 	}
 	public void Friction(World world)
 	{
-		this.VecX /= 1.001;
-		this.VecY /= 1.001;
-		this.VecR /= 1.001;
+		this.Vec.X /= (0.05 * world.DeltaTime)+1;//Woo friction
+		this.Vec.Y /= (0.05 * world.DeltaTime)+1;
 	}
 	public void Destroy()
 	{

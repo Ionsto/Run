@@ -9,12 +9,23 @@ public class Vector {
 		this.Y = y;
 	}
 	//Helping me since 1983
-	public Vector Cross(float x,float y)
+	public float Cross(Vector b)
 	{
-		return new Vector(-y,x);
+		return (X * b.X) + (Y * b.Y);
 	}
-	public Vector Perp(float x,float y)
+	public float Normalise()
 	{
-		return new Vector(-y,x);
+		float Mag = (float) Math.sqrt((X*X)+(Y*Y));
+		X = X/Mag;
+		Y = Y/Mag;
+		return Mag;
+	}
+	public Vector Perpendicular()
+	{
+		return new Vector(-Y,X);
+	}
+	public Vector Negitive()
+	{
+		return new Vector(-X,-Y);
 	}
 }

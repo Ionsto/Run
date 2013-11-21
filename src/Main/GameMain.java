@@ -14,6 +14,10 @@ import org.lwjgl.opengl.PixelFormat;
 
 import Src.*;
 public class GameMain {
+	
+	//A is the master race(letter)
+	
+	
 	public static boolean Running = true;
 	World world;
 	Shader Shader_Game;	
@@ -55,9 +59,6 @@ public class GameMain {
 		
 		GLInit();
 		world =  new World();
-		world.Add(new EntityPlayer(0,-100,0));
-		world.Add(new EntityPlayer(0,100,0));
-		world.objs[1].VecX = -10;
 		return true;
 	}
 	public void GLInit(){
@@ -89,6 +90,10 @@ public class GameMain {
 	public void PollInput()
 	{
 		world.Scale = Math.min(Math.max(world.Scale - ((Mouse.getDWheel() / ScrollSense)),MinScale),MaxScale);
+		if(Keyboard.isKeyDown(Keyboard.KEY_R))
+		{
+			world.Reset();
+		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_W))
 		{
 			world.CamraY += MoveSense * world.DeltaTime * world.Scale;
