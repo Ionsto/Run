@@ -8,7 +8,8 @@ public class Entity {
 	public float VecY = 0;
 	public float VecR = 10;
 	public int Id = 0;
-	public int RenderModel = 0;
+	public RenderModel RenderModel;//The Model used for rendering
+	public CollModel CollModel;
 	public Resouce[] res= new Resouce[10];//personal values
 	//Iron:used for hulls of ships
 	//Hydrogen:used for fuel
@@ -17,6 +18,8 @@ public class Entity {
 	//Rock:used to 'tank it up'!
 	public Entity(int id)
 	{
+		RenderModel = new ModelPlayer(5F);//Cube
+		CollModel = new CollModel(0,0,2.5F,2.5F);
 		for(int i = 0;i< res.length;++i)
 		{
 			res[i] = null;//Set them all to null
@@ -25,7 +28,7 @@ public class Entity {
 	}
 	public Entity(int id,float x,float y)
 	{
-		this.Id = id;
+		this(id);
 		this.PosX = x;
 		this.PosY = y;
 	}

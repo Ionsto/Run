@@ -11,31 +11,20 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 public class World {
-	public List<Model> models = new ArrayList<Model>();
 	public Entity[] objs = new Entity[100];
 	public double DeltaTime = 0;
 	public double Then = 0;
 	public float Scale = 100;
 	public float CamraX = 0;
 	public float CamraY = 0;
-	public float WorldX = 100;
-	public float WorldY = 100;
+	public float WorldX = 200;
+	public float WorldY = 200;
 	public World()
 	{
 		for(int i = 0;i < 100;++i)
 		{
 			objs[i] = null;
 		}
-		Model m = new Model();
-		m.AddFace((byte)0, (byte)1, (byte)2);
-		m.AddFace((byte)1, (byte)2, (byte)3);
-		m.AddVert(-1,-1);
-		m.AddVert(-1,1);
-		m.AddVert(1,-1);
-		m.AddVert(1,1);
-		m.Init();
-		this.models.add(m);
-		this.models.add(new ModelPlayer());
 	}
 	public long getTime() {
 	    return (Sys.getTime() * 1000) / Sys.getTimerResolution();
@@ -64,6 +53,7 @@ public class World {
 				}
 			}
 		}
+		Cycle();
 	}
 	public void Render(Shader shader)
 	{
@@ -73,31 +63,40 @@ public class World {
 		{
 			if(objs[i] != null)
 			{
+				//set shader info
 		        ARBShaderObjects.glUniform2fARB(shader.Loc, objs[i].PosX - CamraX,  objs[i].PosY - CamraY);
 		        ARBShaderObjects.glUniform1fARB(shader.Rot, objs[i].PosR);
-		        
-				/*GL30.glBindVertexArray(models.get(objs[i].RenderModel).VAO);
-
+		        //draw
+				GL30.glBindVertexArray(objs[i].RenderModel.VAO);
 				GL20.glEnableVertexAttribArray(0);
-				
-				GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, models.get(objs[i].RenderModel).VEA);
-				GL11.glDrawElements(GL11.GL_TRIANGLES, models.get(objs[i].RenderModel).IndicesCount, GL11.GL_UNSIGNED_BYTE, 0);
+				GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, objs[i].RenderModel.VEA);
+				GL11.glDrawElements(GL11.GL_TRIANGLES, objs[i].RenderModel.IndicesCount, GL11.GL_UNSIGNED_BYTE, 0);
 				GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
-				GL30.glBindVertexArray(0);*/
-		        
-		        
-		        int vaoId = models.get(objs[i].RenderModel).VAO;
-		        int vboiId = models.get(objs[i].RenderModel).VEA;
-		        int indicesCount = models.get(objs[i].RenderModel).IndicesCount;
-				// Bind to the VAO that has all the information about the vertices
-				GL30.glBindVertexArray(vaoId);
-				GL20.glEnableVertexAttribArray(0);
-				GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboiId);
-				GL11.glDrawElements(GL11.GL_TRIANGLES, indicesCount, GL11.GL_UNSIGNED_BYTE, 0);
-				GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
-				//GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
 				GL20.glDisableVertexAttribArray(0);
 				GL30.glBindVertexArray(0);
+			}
+		}
+	}
+	public void Cycle()
+	{
+		//Colliosion
+		for(int i = 0;i< objs.length-1;++i)
+		{
+			if(objs[i] != null)
+			{
+				for(int is = i+1;is< objs.length;++is)
+				{
+					if(objs[is] != null)
+					{
+						if(objs[i].CollModel.AABB(objs[is].CollModel, 1, objs[i], objs[is]))
+						{
+							objs[i].PosX *= -1;
+							objs[i].PosY *= -1;
+							objs[is].PosX *= -1;
+							objs[is].PosY *= -1;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -116,10 +115,6 @@ public class World {
 	}
 	public void Destroy()
 	{
-		for(int i = 0;i < models.size();++i)
-		{
-			models.get(i).Delete();
-		}
 		for(int i = 0;i < 100;++i)
 		{
 			if(objs[i] != null)

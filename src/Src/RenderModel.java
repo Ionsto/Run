@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-public class Model {
+public class RenderModel {
 	List<Byte> IndPusher = new ArrayList<Byte>();
 	public Vector<Float> VertPusher = new Vector<Float>();
 	public byte[] IndTemp;
@@ -41,12 +41,11 @@ public class Model {
 		
 		VAO = GL30.glGenVertexArrays();
 		GL30.glBindVertexArray(VAO);
-
-		VBO = GL15.glGenBuffers();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, VBO);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, Vertice, GL15.GL_STATIC_DRAW);
-		GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 0, 0);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+			VBO = GL15.glGenBuffers();
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, VBO);
+				GL15.glBufferData(GL15.GL_ARRAY_BUFFER, Vertice, GL15.GL_STATIC_DRAW);
+				GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 0, 0);
+			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		GL30.glBindVertexArray(0);
 		
 		VEA = GL15.glGenBuffers();

@@ -17,6 +17,8 @@ public class GameMain {
 	public static boolean Running = true;
 	World world;
 	Shader Shader_Game;	
+	int Width = 1000;	
+	int Height = 1000;
 	float MaxScale = 100;
 	float MinScale = 1;
 	double MoveSense = 0.05;
@@ -39,8 +41,9 @@ public class GameMain {
 			ContextAttribs contextAtrributes = new ContextAttribs(4, 2)
 				.withForwardCompatible(true)
 				.withProfileCore(true);
-				Display.setFullscreen(true);
+				//Display.setFullscreen(true);
 				Display.setTitle("MainLoop?");
+				Display.setDisplayMode(new DisplayMode(1000,1000));
 				Display.create(pixelFormat, contextAtrributes);
 				Keyboard.create();
 				Mouse.create();
@@ -52,7 +55,9 @@ public class GameMain {
 		
 		GLInit();
 		world =  new World();
-		world.Add(new EntityPlayer(0,0,0));
+		world.Add(new EntityPlayer(0,-100,0));
+		world.Add(new EntityPlayer(0,100,0));
+		world.objs[1].VecX = -10;
 		return true;
 	}
 	public void GLInit(){
@@ -80,6 +85,7 @@ public class GameMain {
 		Shader_Game.Bind();
 		world.Render(Shader_Game);
 	}
+	boolean down = false;
 	public void PollInput()
 	{
 		world.Scale = Math.min(Math.max(world.Scale - ((Mouse.getDWheel() / ScrollSense)),MinScale),MaxScale);
