@@ -17,19 +17,19 @@ public class Shader {
 	public boolean Work = false;
 	public Shader(String frag,String vert)
 	{
-		Frag = genShader(ARBFragmentShader.GL_FRAGMENT_SHADER_ARB,GetFile(vert));
-		Vert = genShader(ARBVertexShader.GL_VERTEX_SHADER_ARB,GetFile(frag));
+		Frag = genShader(GL20.GL_FRAGMENT_SHADER,GetFile(vert));
+		Vert = genShader(GL20.GL_VERTEX_SHADER,GetFile(frag));
 		if(Work)
 		{
-			Program = ARBShaderObjects.glCreateProgramObjectARB();
-	        ARBShaderObjects.glAttachObjectARB(Program, Vert);
-	        ARBShaderObjects.glAttachObjectARB(Program, Frag);
+			Program = GL20.glCreateProgram();
+			GL20.glAttachShader(Program, Vert);
+			GL20.glAttachShader(Program, Frag);
 	        
-	        ARBShaderObjects.glLinkProgramARB(Program);
-	        if (ARBShaderObjects.glGetObjectParameteriARB(Program, ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB) == GL11.GL_FALSE) {
-	        	System.err.println(getLogInfo(Program));
-	        	return;
-	        }
+	        GL20.glLinkProgram(Program);
+	        //if (GL20.(Program, ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB) == GL11.GL_FALSE) {
+	        //	System.err.println(getLogInfo(Program));
+	        //	return;
+	        //}
 	        
 	        ARBShaderObjects.glValidateProgramARB(Program);
 	        if (ARBShaderObjects.glGetObjectParameteriARB(Program, ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB) == GL11.GL_FALSE) {
