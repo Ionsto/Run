@@ -5,8 +5,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
+import Src.Vector;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL30;
 
 public class RenderModel {
 	List<Byte> IndPusher = new ArrayList<Byte>();
-	public Vector<Float> VertPusher = new Vector<Float>();
+	public java.util.Vector<Float> VertPusher = new java.util.Vector<Float>();
 	public byte[] IndTemp;
 	public float[] VertTemp;
 	public int IndicesCount = 0;
@@ -93,5 +93,21 @@ public class RenderModel {
 		
 		GL30.glBindVertexArray(0);
 		GL30.glDeleteVertexArrays(this.VAO);
+	}
+	public void Join(RenderModel them,Entity a,Entity b,Vector AbsDis)
+	{
+		byte Last = (byte) (VertPusher.size()/2);//Contactination
+		for(int i = 0;i < them.IndPusher.size();++i)
+		{
+			this.IndPusher.add((byte) (them.IndPusher.get(i) + Last));
+		}
+		IndicesCount+=them.IndicesCount;
+		for(int i = 0;i < them.VertPusher.size();i += 2)
+		{
+			this.VertPusher.add(them.VertPusher.get(i) + AbsDis.X);//X
+			this.VertPusher.add(them.VertPusher.get(i+1) + AbsDis.Y);//X
+		}
+		this.Delete();
+		this.Init();
 	}
 }

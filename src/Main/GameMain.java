@@ -42,13 +42,14 @@ public class GameMain {
 			//Display.setDisplayMode(new DisplayMode(100,100));
 			//Display.setFullscreen(true);
 			PixelFormat pixelFormat = new PixelFormat();
-			ContextAttribs contextAtrributes = new ContextAttribs(4, 2)
+			ContextAttribs contextAtrributes = new ContextAttribs(3,2)
 				.withForwardCompatible(true)
 				.withProfileCore(true);
-				//Display.setFullscreen(true);
+				Display.setFullscreen(true);
 				Display.setTitle("MainLoop?");
 				Display.setDisplayMode(new DisplayMode(1000,1000));
 				Display.create(pixelFormat, contextAtrributes);
+				System.out.println(GL11.glGetString(GL11.GL_VERSION));
 				Keyboard.create();
 				Mouse.create();
 		}
@@ -93,6 +94,18 @@ public class GameMain {
 		if(Keyboard.isKeyDown(Keyboard.KEY_R))
 		{
 			world.Reset();
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_E))
+		{
+			if(!down)
+			{
+				world.objs[world.Add(new Entity(0,0,-50))].Vel.Y = 5;
+				down = true;
+			}
+		}
+		else
+		{
+			down = false;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_W))
 		{

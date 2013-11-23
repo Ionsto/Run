@@ -69,18 +69,20 @@ public class World {
 						Vector coll = objs[i].CollModel.Collide(objs[i], objs[is]);
 						if(coll != null)
 						{
-							float RatX = objs[i].Vec.X + objs[is].Vec.X;
-							float RatY = objs[i].Vec.Y + objs[is].Vec.Y;							
-							objs[i].Pos.X -= coll.X * ZsDiv(objs[i].Vec.X,RatX);
-							objs[i].Pos.Y -= coll.Y * ZsDiv(objs[i].Vec.Y,RatY);
-							objs[is].Pos.X += coll.X * ZsDiv(objs[is].Vec.X,RatX);
-							objs[is].Pos.Y -= coll.Y * ZsDiv(objs[is].Vec.Y,RatY);
+							float RatX = objs[i].Vel.X + objs[is].Vel.X;
+							float RatY = objs[i].Vel.Y + objs[is].Vel.Y;							
+							objs[i].Pos.X -= coll.X * ZsDiv(objs[i].Vel.X,RatX);
+							objs[i].Pos.Y -= coll.Y * ZsDiv(objs[i].Vel.Y,RatY);
+							objs[is].Pos.X += coll.X * ZsDiv(objs[is].Vel.X,RatX);
+							objs[is].Pos.Y -= coll.Y * ZsDiv(objs[is].Vel.Y,RatY);
 							Vector normal = new Vector(0,0);
-							objs[i].Vec.X = 0;
-							objs[i].Vec.Y = 0;
-							objs[is].Vec.X = 0;
-							objs[is].Vec.Y = 0;
+							float X = ((objs[i].Mass * objs[i].Vel.X)+(objs[is].Mass * objs[is].Vel.X)) / (objs[i].Mass + objs[is].Mass);
+							float Y = ((objs[i].Mass * objs[i].Vel.Y)+(objs[is].Mass * objs[is].Vel.Y)) / (objs[i].Mass + objs[is].Mass);
+							objs[i].Mass += objs[is].Mass;
+							objs[i].Vel.X = X;
+							objs[i].Vel.Y = Y;
 							Join(objs[i],objs[is]);
+							objs[is].Destroy(this);
 						}
 					}
 				}
@@ -99,7 +101,7 @@ public class World {
 	public void Join(Entity a,Entity bob)
 	{
 		//I dislike bob destroy him
-		a.CollModel.AddBox(bob.CollModel,a,bob);
+		a.RenderModel.Join(bob.RenderModel,a,bob, a.CollModel.AddBox(bob.CollModel,a,bob) );
 	}
 	public int Add(Entity ent)
 	{
@@ -120,14 +122,14 @@ public class World {
 		{
 			if(objs[i] != null)
 			{
-				objs[i].Destroy();
+				objs[i].Destroy(this);
 				objs[i] = null;
 			}
 		}
 		Add(new EntityPlayer(0,-100,0));
 		Add(new EntityPlayer(0,100,0));
-		objs[0].Vec.X = 5;
-		objs[1].Vec.X = -5;
+		objs[0].Vel.X = 5;
+		objs[1].Vel.X = -5;
 	}
 	public void Destroy()
 	{
@@ -135,7 +137,7 @@ public class World {
 		{
 			if(objs[i] != null)
 			{
-				objs[i].Destroy();
+				objs[i].Destroy(this);
 			}
 		}
 	}
