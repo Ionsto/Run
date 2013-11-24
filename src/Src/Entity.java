@@ -36,13 +36,28 @@ public class Entity {
 	}
 	public void Intergrate(World world)
 	{
+		float DxDt;
+		float DyDt;
+		this.Pos.X += DxDt * world.DeltaTime;
+		this.Pos.Y += DyDt * world.DeltaTime;
+		
 		this.Pos.X += (float) (this.Vel.X * world.DeltaTime);
 		this.Pos.Y += (float) (this.Vel.Y * world.DeltaTime);
+	}
+	public Derivitve Evaluate()
+	{
+		
 	}
 	public void Friction(World world)
 	{
 		this.Vel.X /= (0.05 * world.DeltaTime)+1;//Woo friction
 		this.Vel.Y /= (0.05 * world.DeltaTime)+1;
+	}
+	public Vector Accelerate(Vector pos,Vector vel)
+	{
+		float K = 10;
+		float B = 1;
+		return new Vector(-K * pos.X - b*vel.X,-K * pos.Y - b*vel.Y)
 	}
 	public void Destroy(World world)
 	{
