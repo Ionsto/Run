@@ -12,7 +12,7 @@ public class Shader {
 	public int Vert = 0;
 	public int Program = 0;
 	public int Loc = 0;//Totalitarian degree of freedom  (my degree of freedom)
-	public int Rot = 0;
+	public int Colour = 0;
 	public int Scale = 0;
 	public boolean Work = false;
 	public Shader(String frag,String vert)
@@ -36,8 +36,11 @@ public class Shader {
 	        	return;
 	        }
 	        Loc = GL20.glGetUniformLocation(Program, "loc");
-	        //Rot = ARBShaderObjects.glGetUniformLocationARB(Program, "rot");
 	        Scale = GL20.glGetUniformLocation(Program, "scale");
+	        Colour = GL20.glGetUniformLocation(Program, "colour");
+	    	GL20.glUniform2f(Loc, 0, 0);
+	        GL20.glUniform2f(Scale, 0, 0);
+	    	GL20.glUniform3f(Colour, 1,0,0);
 		}
 	}
 	public int genShader(int shaderType,String source)
@@ -62,9 +65,6 @@ public class Shader {
     		System.err.println(source);
     		GL20.glDeleteShader(shader);
     	}
-    	GL20.glUniform2f(Loc, 0, 0);
-    	GL20.glUniform1f(Rot, 0);
-        GL20.glUniform2f(Scale, 0, 0);
 		return shader;
 	}
 	public String GetFile(String file)
@@ -90,6 +90,9 @@ public class Shader {
 	}
 	public void Destroy()
 	{
-		
+		GL20.glUseProgram(0);
+		GL20.glDeleteShader(Frag);
+		GL20.glDeleteShader(Vert);
+		GL20.glDeleteProgram(Program);
 	}
 }

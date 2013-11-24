@@ -1,7 +1,0 @@
-package Src;
-
-public class Derivative {
-  float DX = 0;
-  float DY = 0;
-  public Derivative()
-}

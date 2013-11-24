@@ -1,8 +1,6 @@
-#version 150
-in vec2 vert;
-out vec3 colour;
+#version 120
+attribute vec2 vert;
 uniform vec2 loc;
-uniform vec2 colour;
 uniform vec2 scale;
 void main()
 {

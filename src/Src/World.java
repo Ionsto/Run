@@ -71,23 +71,31 @@ public class World {
 						{
 							float RatX = objs[i].Vel.X + objs[is].Vel.X;
 							float RatY = objs[i].Vel.Y + objs[is].Vel.Y;							
-							//objs[i].Pos.X -= coll.X * ZsDiv(objs[i].Vel.X,RatX);
-							//objs[i].Pos.Y -= coll.Y * ZsDiv(objs[i].Vel.Y,RatY);
-							//objs[is].Pos.X += coll.X * ZsDiv(objs[is].Vel.X,RatX);
-							//objs[is].Pos.Y -= coll.Y * ZsDiv(objs[is].Vel.Y,RatY);
-							Vector normal = new Vector(0,0);
 							float X = ((objs[i].Mass * objs[i].Vel.X)+(objs[is].Mass * objs[is].Vel.X)) / (objs[i].Mass + objs[is].Mass);
 							float Y = ((objs[i].Mass * objs[i].Vel.Y)+(objs[is].Mass * objs[is].Vel.Y)) / (objs[i].Mass + objs[is].Mass);
-							objs[i].Mass += objs[is].Mass;
+							float force = ForceCalculate(objs[i].Vel,objs[is].Vel,objs[i].Mass,objs[is].Mass);
 							objs[i].Vel.X = X;
 							objs[i].Vel.Y = Y;
-							Join(objs[i],objs[is]);
-							objs[is].Destroy(this);
+							objs[is].Vel.X = X;
+							objs[is].Vel.Y = Y;
+							if(force > 100)
+							{
+								objs[i].Mass += objs[is].Mass;
+								objs[i].Selected |= objs[is].Selected;
+								Join(objs[i],objs[is]);
+								objs[is].Destroy(this);
+							}
 						}
 					}
 				}
 			}
 		}
+	}
+	public float ForceCalculate(Vector a,Vector b,float Massa,float Massb)
+	{
+		float force = 0;
+		
+		return force;
 	}
 	public float ZsDiv(float a,float b)//Special function that returns 0(zero safe division)
 	{
@@ -145,13 +153,21 @@ public class World {
 	public void Render(Shader shader)
 	{
 
-        ARBShaderObjects.glUniform2fARB(shader.Scale, Scale, Scale);
+        GL20.glUniform2f(shader.Scale, Scale, Scale);
 		for(int i = 0;i < 100;++i)
 		{
 			if(objs[i] != null)
 			{
 				//set shader info
-		        ARBShaderObjects.glUniform2fARB(shader.Loc, objs[i].Pos.X - CamraX,  objs[i].Pos.Y - CamraY);
+		        GL20.glUniform2f(shader.Loc, objs[i].Pos.X - CamraX,  objs[i].Pos.Y - CamraY);
+		        if(objs[i].Selected)
+		        {
+			    	GL20.glUniform3f(shader.Colour, 0,0,1);
+		        }
+		        else
+		        {
+			    	GL20.glUniform3f(shader.Colour, 1,0,0);
+		        }
 		        //draw
 				GL30.glBindVertexArray(objs[i].RenderModel.VAO);
 				GL20.glEnableVertexAttribArray(0);
@@ -166,18 +182,13 @@ public class World {
 	public Entity Select(float x,float y)
 	{
 		int best = -1;
-		float dis = 50;
 		for(int i = 0 ;i < objs.length;++i)
 		{
 			if(objs[i] != null)
 			{
-				float xd = objs[i].Pos.X - x;
-				float yd = objs[i].Pos.Y - y;
-				float cdis = (xd * xd) + (yd * yd);
-				if(Math.sqrt(cdis) < dis)
+				if(objs[i].CollModel.AABBP(objs[i], new Vector(x,y))!= null)
 				{
 					best = i;
-					dis = cdis;
 				}
 			}
 		}

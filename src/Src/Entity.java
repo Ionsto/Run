@@ -3,6 +3,7 @@ package Src;
 public class Entity {
 	public Vector Pos = new Vector(0,0);
 	public Vector Vel = new Vector(0,0);
+	public boolean Selected = false;
 	public float Mass = 10;
 	public int Id = 0;
 	public RenderModel RenderModel;//The Model used for rendering
@@ -36,28 +37,13 @@ public class Entity {
 	}
 	public void Intergrate(World world)
 	{
-		float DxDt;
-		float DyDt;
-		this.Pos.X += DxDt * world.DeltaTime;
-		this.Pos.Y += DyDt * world.DeltaTime;
-		
-		this.Pos.X += (float) (this.Vel.X * world.DeltaTime);
-		this.Pos.Y += (float) (this.Vel.Y * world.DeltaTime);
-	}
-	public Derivitve Evaluate()
-	{
-		
+		this.Pos.X += this.Vel.X * world.DeltaTime;
+		this.Pos.Y += this.Vel.Y* world.DeltaTime;
 	}
 	public void Friction(World world)
 	{
 		this.Vel.X /= (0.05 * world.DeltaTime)+1;//Woo friction
 		this.Vel.Y /= (0.05 * world.DeltaTime)+1;
-	}
-	public Vector Accelerate(Vector pos,Vector vel)
-	{
-		float K = 10;
-		float B = 1;
-		return new Vector(-K * pos.X - b*vel.X,-K * pos.Y - b*vel.Y)
 	}
 	public void Destroy(World world)
 	{

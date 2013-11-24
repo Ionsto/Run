@@ -1,8 +1,7 @@
-#version 150
-out vec4 colour;
-in vec3 colourin;
+#version 120
+uniform vec3 colour;
 
 void main()
 {
-	colour = colourin;
+	gl_FragColor = vec4(colour,1);//colourin;
 }

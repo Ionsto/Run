@@ -36,6 +36,19 @@ public class CollBox {
 		}
 		return null;
 	}
+	public Vector AABBP(Entity a,Vector point)
+	{
+		if(Math.abs((this.X) + (a.Pos.X - point.X)) < this.SX)
+		{
+			if(Math.abs((this.Y) + (a.Pos.Y - point.Y)) < this.SY)
+			{
+				float PenX = this.SX - Math.abs((this.X) + (a.Pos.X - point.X));
+				float PenY = this.SY - Math.abs((this.Y) + (a.Pos.Y - point.Y));
+				return new Vector(PenX,PenY);
+			}
+		}
+		return null;
+	}
 	public Vector Collide(Entity a,Entity b)//A is this's (long lost) parent
 	{
 		Vector Coll = null;

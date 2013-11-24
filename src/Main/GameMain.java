@@ -19,6 +19,7 @@ public class GameMain {
 	
 	
 	public static boolean Running = true;
+	public int Context = -1;
 	World world;
 	Shader Shader_Game;	
 	int Width = 500;	
@@ -125,6 +126,14 @@ public class GameMain {
 		{
 			world.CamraX += MoveSense * world.DeltaTime * world.Scale;
 		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_M))//Move
+		{
+			Context = 0;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_F))//Fire
+		{
+			Context =1;
+		}
 		if(Mouse.isButtonDown(0))
 		{
 			if(!downm)
@@ -132,23 +141,47 @@ public class GameMain {
 				if(Selected != null)
 				{
 					//Do Something
-					System.out.println(Selected.Id);
+					if(Context == 0)//Move
+					{
+						if(Selected instanceof EntityRocket)
+						{
+							Vector mouse = GetMouse();
+							float Theta = (float) Math.atan2(Selected.Pos.Y - mouse.Y,Selected.Pos.X - mouse.X);
+							Selected.Vel.X = -(float) (((EntityRocket)Selected).Speed * Math.cos(Theta));
+							Selected.Vel.Y = -(float) (((EntityRocket)Selected).Speed * Math.sin(Theta));
+						}
+					}
+					//Do Something
+					if(Context == 1)//Move
+					{
+						if(Selected instanceof EntityPlayer)
+						{
+							Vector mouse = GetMouse();
+							float Theta = (float) Math.atan2(Selected.Pos.Y - mouse.Y,Selected.Pos.X - mouse.X);
+							EntityRocket roc = new EntityRocket(0);
+							float x = Selected.CollModel.SX + roc.CollModel.SX;
+							float y = Selected.CollModel.SY + roc.CollModel.SY;
+							float dis = (float) Math.sqrt((x * x) + (y * y));
+							roc.Pos.X = Selected.Pos.X -( (float) (dis * Math.cos(Theta)));
+							roc.Pos.Y = Selected.Pos.Y -( (float) (dis * Math.sin(Theta)));
+							roc.Vel.X = (float) (-(float) roc.Speed * Math.cos(Theta));
+							roc.Vel.Y = (float) (-(float) roc.Speed * Math.sin(Theta));
+							int i = world.Add(roc);
+						}
+					}
+					Selected.Selected = false;
+					Context = -1;
 					Selected = null;
 				}
 				else
 				{
 					//Try and select something
-					float mx = Mouse.getX();
-					float my = Mouse.getY();
-					float wx = (Width/2.0F);
-					float wy = (Height/2.0F);
-					float Mx = (float)(mx-wx)/wx;
-					float My = (float)(my-wy)/wy;
-					Mx *= world.Scale;
-					My *= world.Scale;
-					//Mx += world.CamraX;
-					//My += world.CamraY;
-					Selected = world.Select(Mx,My);
+					Vector mouse = GetMouse();
+					Selected = world.Select(mouse.X,mouse.Y);
+					if(Selected != null)
+					{
+						Selected.Selected = true;
+					}
 					//System.out.println(((world.CamraX*-1)+ Mouse.getX()) + ":" + ((world.CamraY*-1) + (Height - Mouse.getY())) );
 				}
 				downm = true;
@@ -158,6 +191,20 @@ public class GameMain {
 		{
 			downm = false;
 		}
+	}
+	public Vector GetMouse()
+	{
+		float mx = Mouse.getX();
+		float my = Mouse.getY();
+		float wx = (Width/2.0F);
+		float wy = (Height/2.0F);
+		float Mx = (float)(mx-wx)/wx;
+		float My = (float)(my-wy)/wy;
+		Mx *= world.Scale;
+		My *= world.Scale;
+		Mx += world.CamraX;
+		My += world.CamraY;
+		return new Vector(Mx,My);
 	}
 	public void Destroy()
 	{
