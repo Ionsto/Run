@@ -166,20 +166,18 @@ public class World {
 	public Entity Select(float x,float y)
 	{
 		int best = -1;
-		float dis = 100 * 100;
+		float dis = 50;
 		for(int i = 0 ;i < objs.length;++i)
 		{
 			if(objs[i] != null)
 			{
-				if(dis == -1)
+				float xd = objs[i].Pos.X - x;
+				float yd = objs[i].Pos.Y - y;
+				float cdis = (xd * xd) + (yd * yd);
+				if(Math.sqrt(cdis) < dis)
 				{
 					best = i;
-					dis = (objs[i].Pos.X * objs[i].Pos.X ) + (objs[i].Pos.Y * objs[i].Pos.Y);
-				}
-				if(dis < (objs[i].Pos.X * objs[i].Pos.X ) + (objs[i].Pos.Y * objs[i].Pos.Y))
-				{
-					best = i;
-					dis = (objs[i].Pos.X * objs[i].Pos.X ) + (objs[i].Pos.Y * objs[i].Pos.Y);
+					dis = cdis;
 				}
 			}
 		}

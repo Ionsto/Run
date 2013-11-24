@@ -1,7 +1,8 @@
-#version 420
-out vec4 color;
+#version 150
+out vec4 colour;
+in vec3 colourin;
 
 void main()
 {
-	color = vec4(1,0,0,1);
+	colour = colourin;
 }

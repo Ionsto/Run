@@ -21,13 +21,13 @@ public class GameMain {
 	public static boolean Running = true;
 	World world;
 	Shader Shader_Game;	
-	int Width = 1000;	
-	int Height = 1000;
+	int Width = 500;	
+	int Height = 500;
 	float MaxScale = 100;
 	float MinScale = 1;
 	double MoveSense = 0.05;
 	float ScrollSense = 10;
-	int Selected = -1;
+	Entity Selected = null;
 	public void Start(){
 		if(Init())
 		{
@@ -48,7 +48,7 @@ public class GameMain {
 				.withProfileCore(true);
 				Display.setFullscreen(true);
 				Display.setTitle("MainLoop?");
-				Display.setDisplayMode(new DisplayMode(1000,1000));
+				Display.setDisplayMode(new DisplayMode(Width,Height));
 				Display.create(pixelFormat, contextAtrributes);
 				System.out.println(GL11.glGetString(GL11.GL_VERSION));
 				Keyboard.create();
@@ -89,6 +89,7 @@ public class GameMain {
 		world.Render(Shader_Game);
 	}
 	boolean down = false;
+	boolean downm = false;
 	public void PollInput()
 	{
 		world.Scale = Math.min(Math.max(world.Scale - ((Mouse.getDWheel() / ScrollSense)),MinScale),MaxScale);
@@ -126,15 +127,36 @@ public class GameMain {
 		}
 		if(Mouse.isButtonDown(0))
 		{
-			if(Selected != -1)
+			if(!downm)
 			{
-				//Do Something
+				if(Selected != null)
+				{
+					//Do Something
+					System.out.println(Selected.Id);
+					Selected = null;
+				}
+				else
+				{
+					//Try and select something
+					float mx = Mouse.getX();
+					float my = Mouse.getY();
+					float wx = (Width/2.0F);
+					float wy = (Height/2.0F);
+					float Mx = (float)(mx-wx)/wx;
+					float My = (float)(my-wy)/wy;
+					Mx *= world.Scale;
+					My *= world.Scale;
+					//Mx += world.CamraX;
+					//My += world.CamraY;
+					Selected = world.Select(Mx,My);
+					//System.out.println(((world.CamraX*-1)+ Mouse.getX()) + ":" + ((world.CamraY*-1) + (Height - Mouse.getY())) );
+				}
+				downm = true;
 			}
-			else
-			{
-				//Try and select something
-				world.Select(world.CamraX + Mouse.getX(),world.CamraY + (Height - Mouse.getY()));
-			}
+		}
+		else
+		{
+			downm = false;
 		}
 	}
 	public void Destroy()
