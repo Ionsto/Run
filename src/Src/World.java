@@ -71,10 +71,10 @@ public class World {
 						{
 							float RatX = objs[i].Vel.X + objs[is].Vel.X;
 							float RatY = objs[i].Vel.Y + objs[is].Vel.Y;							
-							objs[i].Pos.X -= coll.X * ZsDiv(objs[i].Vel.X,RatX);
-							objs[i].Pos.Y -= coll.Y * ZsDiv(objs[i].Vel.Y,RatY);
-							objs[is].Pos.X += coll.X * ZsDiv(objs[is].Vel.X,RatX);
-							objs[is].Pos.Y -= coll.Y * ZsDiv(objs[is].Vel.Y,RatY);
+							//objs[i].Pos.X -= coll.X * ZsDiv(objs[i].Vel.X,RatX);
+							//objs[i].Pos.Y -= coll.Y * ZsDiv(objs[i].Vel.Y,RatY);
+							//objs[is].Pos.X += coll.X * ZsDiv(objs[is].Vel.X,RatX);
+							//objs[is].Pos.Y -= coll.Y * ZsDiv(objs[is].Vel.Y,RatY);
 							Vector normal = new Vector(0,0);
 							float X = ((objs[i].Mass * objs[i].Vel.X)+(objs[is].Mass * objs[is].Vel.X)) / (objs[i].Mass + objs[is].Mass);
 							float Y = ((objs[i].Mass * objs[i].Vel.Y)+(objs[is].Mass * objs[is].Vel.Y)) / (objs[i].Mass + objs[is].Mass);
@@ -126,8 +126,9 @@ public class World {
 				objs[i] = null;
 			}
 		}
-		Add(new EntityPlayer(0,-100,0));
-		Add(new EntityPlayer(0,100,0));
+		Add(new EntityPlanet(0,-100,0));
+		Add(new EntityPlanet(0,100,0));
+		Add(new EntityPlayer(0,0,100));
 		objs[0].Vel.X = 5;
 		objs[1].Vel.X = -5;
 	}
@@ -162,5 +163,30 @@ public class World {
 			}
 		}
 	}
-	
+	public Entity Select(float x,float y)
+	{
+		int best = -1;
+		float dis = 100 * 100;
+		for(int i = 0 ;i < objs.length;++i)
+		{
+			if(objs[i] != null)
+			{
+				if(dis == -1)
+				{
+					best = i;
+					dis = (objs[i].Pos.X * objs[i].Pos.X ) + (objs[i].Pos.Y * objs[i].Pos.Y);
+				}
+				if(dis < (objs[i].Pos.X * objs[i].Pos.X ) + (objs[i].Pos.Y * objs[i].Pos.Y))
+				{
+					best = i;
+					dis = (objs[i].Pos.X * objs[i].Pos.X ) + (objs[i].Pos.Y * objs[i].Pos.Y);
+				}
+			}
+		}
+		if(best != -1)
+		{
+			return objs[best];
+		}
+		return null;
+	}
 }

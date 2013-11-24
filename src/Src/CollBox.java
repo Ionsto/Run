@@ -62,27 +62,27 @@ public class CollBox {
 	public void AddBox(CollBox mod)
 	{
 		this.boxes.add(mod);
-		float Minx = 0;
-		float Miny = 0;
-		float Maxx = 0;
-		float Maxy = 0;
-		if(mod.X + mod.SX > this.SX + this.X)
+		float Maxx = this.X + this.SX;
+		float Minx = this.X - this.SX;
+		float Maxy = this.Y + this.SY;
+		float Miny = this.Y - this.SY;
+		if(mod.X + mod.SX > this.X + this.SX)
 		{
 			Maxx = mod.X+mod.SX;
 		}
-		if(mod.X - mod.SX < this.SX + this.X)
+		if(mod.X - mod.SX < this.X - this.SX)
 		{
 			Minx = mod.X-mod.SX;
 		}
-		if(mod.Y+mod.SY > this.SY + this.Y)
+		if(mod.Y+mod.SY > this.Y + this.SY)
 		{
 			Maxy = mod.Y+mod.SY;
 		}
-		if(mod.Y-mod.SY < this.SY + this.Y)
+		if(mod.Y-mod.SY < this.Y - this.SY)
 		{
 			Miny = mod.Y-mod.SY;
 		}
-		this.X = (Minx + Maxx)/2;
+		this.X = (Minx + Maxx)/2;//Midpoints
 		this.Y = (Miny + Maxy)/2;
 		this.SX = Maxx - this.X;
 		this.SY = Maxy - this.Y;
@@ -94,20 +94,22 @@ public class CollBox {
 		{
 			for(int i = 0;i< mod.boxes.size();++i)
 			{
-				CollBox Question = mod.boxes.get(i);
+ 				CollBox Question = mod.boxes.get(i);
 				CollBox CollWith = boxes.get(mod.CollidedWith);
-				AbsDis.X = CollWith.X +((CollWith.X+b.Pos.X) - (Question.X+a.Pos.X));// + (CollWith.SX * Math.signum((CollWith.X+b.Pos.X) - (Question.X+a.Pos.X)));
-				AbsDis.Y = CollWith.Y +((CollWith.Y+b.Pos.Y) - (Question.Y+a.Pos.Y));// + (CollWith.SY * Math.signum((CollWith.Y+b.Pos.Y) - (Question.Y+a.Pos.Y)));
+				AbsDis.X = ((b.Pos.X) - (a.Pos.X));// + (CollWith.SX * Math.signum((CollWith.X+b.Pos.X) - (Question.X+a.Pos.X)));
+				AbsDis.Y = ((b.Pos.Y) - (a.Pos.Y));// + (CollWith.SY * Math.signum((CollWith.Y+b.Pos.Y) - (Question.Y+a.Pos.Y)));
 				Question.X += AbsDis.X;
 				Question.Y += AbsDis.Y;
-				this.boxes.add(Question);
+				AddBox(Question);
 			}
 		}
 		else
 		{
-			mod.X += (b.Pos.X - a.Pos.X);
-			mod.Y += (b.Pos.Y - a.Pos.Y);
-			this.boxes.add(mod);
+			AbsDis.X = ((b.Pos.X) - (a.Pos.X));// + (CollWith.SX * Math.signum((CollWith.X+b.Pos.X) - (Question.X+a.Pos.X)));
+			AbsDis.Y = ((b.Pos.Y) - (a.Pos.Y));// + (CollWith.SY * Math.signum((CollWith.Y+b.Pos.Y) - (Question.Y+a.Pos.Y)));
+			mod.X += AbsDis.X;
+			mod.Y += AbsDis.Y;
+			AddBox(mod);
 		}
 		return AbsDis;
 	}

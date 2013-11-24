@@ -27,6 +27,7 @@ public class GameMain {
 	float MinScale = 1;
 	double MoveSense = 0.05;
 	float ScrollSense = 10;
+	int Selected = -1;
 	public void Start(){
 		if(Init())
 		{
@@ -122,6 +123,18 @@ public class GameMain {
 		if(Keyboard.isKeyDown(Keyboard.KEY_D))
 		{
 			world.CamraX += MoveSense * world.DeltaTime * world.Scale;
+		}
+		if(Mouse.isButtonDown(0))
+		{
+			if(Selected != -1)
+			{
+				//Do Something
+			}
+			else
+			{
+				//Try and select something
+				world.Select(world.CamraX + Mouse.getX(),world.CamraY + (Height - Mouse.getY()));
+			}
 		}
 	}
 	public void Destroy()
