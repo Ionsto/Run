@@ -1,11 +1,11 @@
 package Src;
 
-public class ModelPlayer extends RenderModel {
-	public ModelPlayer()
+public class ModelSquare extends RenderModel {
+	public ModelSquare()
 	{
 		this(1);
 	}
-	public ModelPlayer(float size)
+	public ModelSquare(float size)
 	{
 		this.AddVert(-size, -size);//Main cube
 		this.AddVert(-size, size);

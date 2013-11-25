@@ -3,11 +3,15 @@ package Src;
 public class Entity {
 	public Vector Pos = new Vector(0,0);
 	public Vector Vel = new Vector(0,0);
+	public float Red = 1;//Defult
+	public float Green = 0;
+	public float Blue = 0;
 	public boolean Selected = false;
 	public float Mass = 10;
 	public int Id = 0;
 	public RenderModel RenderModel;//The Model used for rendering
 	public CollBox CollModel;
+	public int ResCount = 0;
 	public Resouce[] res= new Resouce[10];//personal values
 	//Iron:used for hulls of ships
 	//Hydrogen:used for fuel
@@ -16,7 +20,7 @@ public class Entity {
 	//Rock:used to 'tank it up'!
 	public Entity(int id)
 	{
-		RenderModel = new ModelPlayer(5F);//Cube
+		RenderModel = new ModelSquare(5F);//Cube
 		CollModel = new CollBox(new CollBox(0,0,2.5F,2.5F));
 		for(int i = 0;i< res.length;++i)
 		{

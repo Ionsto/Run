@@ -1,4 +1,4 @@
-#version 120
+#version 150
 uniform vec3 colour;
 
 void main()

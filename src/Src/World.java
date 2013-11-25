@@ -19,6 +19,7 @@ public class World {
 	public float CamraY = 0;
 	public float WorldX = 200;
 	public float WorldY = 200;
+	public ModelSquare square;
 	public World()
 	{
 		for(int i = 0;i < 100;++i)
@@ -69,8 +70,14 @@ public class World {
 						Vector coll = objs[i].CollModel.Collide(objs[i], objs[is]);
 						if(coll != null)
 						{
-							float RatX = objs[i].Vel.X + objs[is].Vel.X;
-							float RatY = objs[i].Vel.Y + objs[is].Vel.Y;							
+							//float RatX = Math.abs(objs[i].Vel.X + objs[is].Vel.X);
+							//float RatY = Math.abs(objs[i].Vel.Y + objs[is].Vel.Y);
+							
+							//objs[i].Pos.X -= coll.Y * ZsDiv(objs[i].Vel.X, RatX);
+							//objs[i].Pos.Y -= coll.X * ZsDiv(objs[i].Vel.Y, RatY);
+							//objs[is].Pos.X += coll.Y * ZsDiv(objs[is].Vel.X, RatX);
+							//objs[is].Pos.Y += coll.X * ZsDiv(objs[is].Vel.Y, RatY);
+							
 							float X = ((objs[i].Mass * objs[i].Vel.X)+(objs[is].Mass * objs[is].Vel.X)) / (objs[i].Mass + objs[is].Mass);
 							float Y = ((objs[i].Mass * objs[i].Vel.Y)+(objs[is].Mass * objs[is].Vel.Y)) / (objs[i].Mass + objs[is].Mass);
 							float force = ForceCalculate(objs[i].Vel,objs[is].Vel,objs[i].Mass,objs[is].Mass);
@@ -78,12 +85,20 @@ public class World {
 							objs[i].Vel.Y = Y;
 							objs[is].Vel.X = X;
 							objs[is].Vel.Y = Y;
-							if(force > 100)
+							if(force > 50)
 							{
-								objs[i].Mass += objs[is].Mass;
-								objs[i].Selected |= objs[is].Selected;
-								Join(objs[i],objs[is]);
-								objs[is].Destroy(this);
+								int affect = i;
+								int affects = is;
+								if(force < 100)
+								{
+									if(objs[is] instanceof EntityPlayer)
+									{
+										affects = i;
+										affect = is;
+									}
+								}
+								Join(objs[affect],objs[affects]);
+								objs[affects].Destroy(this);
 							}
 						}
 					}
@@ -93,22 +108,33 @@ public class World {
 	}
 	public float ForceCalculate(Vector a,Vector b,float Massa,float Massb)
 	{
-		float force = 0;
-		
-		return force;
+		float am = (float) Math.sqrt((a.X*a.X)+(a.Y*a.Y));
+		float forcea = 0.5F *(Massa * (am* am));
+		return forcea;
 	}
 	public float ZsDiv(float a,float b)//Special function that returns 0(zero safe division)
 	{
-		float ans = 0;
 		if(a != 0 && b != 0)
 		{
-			ans = a/b;
+			return a/b;
 		}
-		return ans;
+		return 0;
 	}
 	public void Join(Entity a,Entity bob)
 	{
 		//I dislike bob destroy him
+		for(int i = 0;i< bob.res.length;++i)
+		{
+			if(a.res[i] != null && bob.res[i] != null)
+			{
+				a.res[i].Quantity += bob.res[i].Quantity;
+			}
+		}
+		a.Mass += bob.Mass;
+		a.Selected |= bob.Selected;
+		if(a instanceof EntityRocket && bob instanceof EntityRocket){
+			((EntityRocket)a).Speed += ((EntityRocket)bob).Speed;
+		}
 		a.RenderModel.Join(bob.RenderModel,a,bob, a.CollModel.AddBox(bob.CollModel,a,bob) );
 	}
 	public int Add(Entity ent)
@@ -150,6 +176,20 @@ public class World {
 			}
 		}
 	}
+	public void RenderInfo(Entity e,Shader shader)
+	{
+		float all = 0;
+		for(int i = 0;i < e.res.length;++i)
+		{
+			if(e.res[i] != null)
+			{
+				if(e.res[i].Quantity == 0)
+				{
+					GL20.glUniform2f(shader.Scale, 1, ((e.res[i].Quantity/all) / 100));
+				}
+			}
+		}
+	}
 	public void Render(Shader shader)
 	{
 
@@ -166,7 +206,7 @@ public class World {
 		        }
 		        else
 		        {
-			    	GL20.glUniform3f(shader.Colour, 1,0,0);
+			    	GL20.glUniform3f(shader.Colour, objs[i].Red,objs[i].Green,objs[i].Blue);
 		        }
 		        //draw
 				GL30.glBindVertexArray(objs[i].RenderModel.VAO);

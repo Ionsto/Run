@@ -11,6 +11,8 @@ public class CollBox {
 	public float SX = 0;//Full Size
 	public float SY = 0;
 	public int CollidedWith = 0;
+	public int Start = 0;
+	public int Length = 0;
 	public CollBox(float x,float y,float sx,float sy)//half sx
 	{
 		X = x;

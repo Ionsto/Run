@@ -22,6 +22,7 @@ public class GameMain {
 	public int Context = -1;
 	World world;
 	Shader Shader_Game;	
+	Shader Shader_Lamb_Slider;
 	int Width = 500;	
 	int Height = 500;
 	float MaxScale = 100;
@@ -49,11 +50,13 @@ public class GameMain {
 				.withProfileCore(true);
 				Display.setFullscreen(true);
 				Display.setTitle("MainLoop?");
-				Display.setDisplayMode(new DisplayMode(Width,Height));
+				//Display.setDisplayMode(new DisplayMode(Width,Height));
 				Display.create(pixelFormat, contextAtrributes);
 				System.out.println(GL11.glGetString(GL11.GL_VERSION));
 				Keyboard.create();
 				Mouse.create();
+				Width = Display.getWidth();
+				Height = Display.getHeight();
 		}
 		catch (Exception e)
 		{
@@ -65,7 +68,8 @@ public class GameMain {
 		return true;
 	}
 	public void GLInit(){
-		Shader_Game = new Shader(new File("shader").getAbsolutePath()+"/vert.vert",new File("shader").getAbsolutePath()+"/frag.frag");
+		Shader_Game = new Shader(new File("shader").getAbsolutePath()+"/Game_vert.vert",new File("shader").getAbsolutePath()+"/Game_frag.frag");
+		Shader_Lamb_Slider = new Shader(new File("shader").getAbsolutePath()+"/Slider_vert.vert",new File("shader").getAbsolutePath()+"/Slider_frag.frag");
 		GL20.glEnableVertexAttribArray(0);
 	}
 	public void MainLoop()//Nicely named
@@ -88,6 +92,12 @@ public class GameMain {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		Shader_Game.Bind();
 		world.Render(Shader_Game);
+		if(Selected != null)
+		{
+			Shader_Lamb_Slider.Bind();
+			world.RenderInfo(Selected,Shader_Lamb_Slider);
+		}
+		
 	}
 	boolean down = false;
 	boolean downm = false;
@@ -97,18 +107,6 @@ public class GameMain {
 		if(Keyboard.isKeyDown(Keyboard.KEY_R))
 		{
 			world.Reset();
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_E))
-		{
-			if(!down)
-			{
-				world.objs[world.Add(new Entity(0,0,-50))].Vel.Y = 5;
-				down = true;
-			}
-		}
-		else
-		{
-			down = false;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_W))
 		{
@@ -126,13 +124,17 @@ public class GameMain {
 		{
 			world.CamraX += MoveSense * world.DeltaTime * world.Scale;
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_M))//Move
+		if(Keyboard.isKeyDown(Keyboard.KEY_E))//Move
 		{
 			Context = 0;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_F))//Fire
 		{
-			Context =1;
+			Context = 1;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_Q))//Add block
+		{
+			Context = 2;
 		}
 		if(Mouse.isButtonDown(0))
 		{
@@ -152,7 +154,7 @@ public class GameMain {
 						}
 					}
 					//Do Something
-					if(Context == 1)//Move
+					if(Context == 1)//Fire Rocket
 					{
 						if(Selected instanceof EntityPlayer)
 						{
@@ -166,6 +168,19 @@ public class GameMain {
 							roc.Pos.Y = Selected.Pos.Y -( (float) (dis * Math.sin(Theta)));
 							roc.Vel.X = (float) (-(float) roc.Speed * Math.cos(Theta));
 							roc.Vel.Y = (float) (-(float) roc.Speed * Math.sin(Theta));
+							int i = world.Add(roc);
+						}
+					}
+					if(Context == 2)//Add BuildingBlock
+					{
+						if(Selected instanceof EntityPlayer)
+						{
+							Vector mouse = GetMouse();
+							float Theta = (float) Math.atan2(Selected.Pos.Y - mouse.Y,Selected.Pos.X - mouse.X);
+							EntityRocket roc = new EntityBlock(0);
+							float dis = 50;
+							roc.Pos.X = Selected.Pos.X + (Math.min(dis,Math.abs(Selected.Pos.X - mouse.X)) * Math.signum(Selected.Pos.X - mouse.X) * -1);
+							roc.Pos.Y = Selected.Pos.Y + (Math.min(dis,Math.abs(Selected.Pos.Y - mouse.Y)) * Math.signum(Selected.Pos.Y - mouse.Y) * -1);
 							int i = world.Add(roc);
 						}
 					}
