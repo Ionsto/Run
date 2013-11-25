@@ -12,7 +12,7 @@ public class Entity {
 	public RenderModel RenderModel;//The Model used for rendering
 	public CollBox CollModel;
 	public int ResCount = 0;
-	public Resouce[] res= new Resouce[10];//personal values
+	public Resouce[] res= new Resouce[5];//personal values
 	//Iron:used for hulls of ships
 	//Hydrogen:used for fuel
 	//Oxygen:used for burning stuff
@@ -27,6 +27,17 @@ public class Entity {
 			res[i] = null;//Set them all to null
 		}
 		this.Id = id;
+		SetUpRes();
+		for(int i = 0;i< res.length;++i)
+		{
+			if(res[i] != null)
+			{
+				this.ResCount += res[i].Quantity;
+			}
+		}
+	}
+	public void SetUpRes()
+	{
 	}
 	public Entity(int id,float x,float y)
 	{
@@ -38,6 +49,14 @@ public class Entity {
 	{
 		Intergrate(world);
 		Friction(world);
+
+		for(int i = 0;i< res.length;++i)
+		{
+			if(res[i] != null)
+			{
+				if(res[i].Quantity>100){res[i].Quantity = 100;}
+			}
+		}
 	}
 	public void Intergrate(World world)
 	{

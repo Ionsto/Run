@@ -8,7 +8,17 @@ public class EntityRocket extends Entity {
 	}
 
 	public EntityRocket(int id,float x,float y) {
-		super(id,x,y);
-		RenderModel = new ModelSquare(5F);//Cube
+		this(id);
+		this.Pos.X = x;
+		this.Pos.Y = y;
+	}
+	public void SetUpRes()
+	{
+		res[0] = new Resouce();
+		res[0].Name = "Iron";
+		res[0].Quantity = 10;
+		res[1] = new Resouce();
+		res[1].Name = "Hydrogen";
+		res[1].Quantity = 50;
 	}
 }

@@ -17,8 +17,8 @@ public class World {
 	public float Scale = 100;
 	public float CamraX = 0;
 	public float CamraY = 0;
-	public float WorldX = 200;
-	public float WorldY = 200;
+	public float WorldX = 1000;
+	public float WorldY = 1000;
 	public ModelSquare square;
 	public World()
 	{
@@ -26,6 +26,7 @@ public class World {
 		{
 			objs[i] = null;
 		}
+		square = new ModelSquare();
 	}
 	public long getTime() {
 	    return (Sys.getTime() * 1000) / Sys.getTimerResolution();
@@ -65,6 +66,10 @@ public class World {
 			{
 				for(int is = i+1;is< objs.length;++is)
 				{
+					if(objs[i] == null)//Sort of nullifies the preveiose statement
+					{
+						++i;
+					}
 					if(objs[is] != null)
 					{
 						Vector coll = objs[i].CollModel.Collide(objs[i], objs[is]);
@@ -89,7 +94,7 @@ public class World {
 							{
 								int affect = i;
 								int affects = is;
-								if(force < 100)
+								if(1 - (objs[is].Mass / objs[i].Mass) > 0.5)//If one mass is rediculesly massive comparitivle
 								{
 									if(objs[is] instanceof EntityPlayer)
 									{
@@ -98,11 +103,71 @@ public class World {
 									}
 								}
 								Join(objs[affect],objs[affects]);
-								objs[affects].Destroy(this);
+								if(objs[affects]!= null){objs[affects].Destroy(this);}
+							}
+							else
+							{
+								//Move Resources (Planet -> Rocket -> SpaceShip) order of importance
+								int from = i;
+								int to = is;
+								int MoveRate = 10;
+								if(objs[from] instanceof EntityPlanet && objs[to] instanceof EntityRocket)
+								{
+									MoveStuff(objs[to],objs[from],MoveRate);
+								}
+								if(objs[from] instanceof EntityRocket && !(objs[from] instanceof EntityPlayer || objs[from] instanceof EntityBlock) && objs[to] instanceof EntityPlayer)
+								{
+									MoveStuff(objs[to],objs[from],MoveRate);
+								}
+								from = is;
+								to = i;
+								if(objs[from] instanceof EntityPlanet && objs[to] instanceof EntityRocket)
+								{
+									MoveStuff(objs[to],objs[from],MoveRate);
+								}
+								if(objs[from] instanceof EntityRocket && !(objs[from] instanceof EntityPlayer || objs[from] instanceof EntityBlock) && objs[to] instanceof EntityPlayer)
+								{
+									MoveStuff(objs[to],objs[from],MoveRate);
+								}
 							}
 						}
 					}
 				}
+			}
+		}
+	}
+	public void MoveStuff(Entity a,Entity b,int count)
+	{
+		for(int i = 0;i< b.res.length;++i)
+		{
+			if(b.res[i] != null)
+			{
+				if(a.res[i] == null)
+				{
+					//populate
+					a.res[i] = new Resouce();
+					a.res[i].Exchange = b.res[i].Exchange;
+					a.res[i].Name = b.res[i].Name;
+				}
+				if(b.res[i].Quantity >= count)
+				{
+					a.res[i].Quantity += count;
+					b.res[i].Quantity -= count;
+					a.ResCount += count;
+					b.ResCount -= count;
+				}
+				else
+				{
+					int countt = b.res[i].Quantity;
+					a.res[i].Quantity += countt;
+					b.res[i].Quantity -= countt;
+					a.ResCount += countt;
+					b.ResCount -= countt;
+				}
+			}
+			if(b.ResCount <= 0)
+			{
+				b.Destroy(this);
 			}
 		}
 	}
@@ -123,13 +188,7 @@ public class World {
 	public void Join(Entity a,Entity bob)
 	{
 		//I dislike bob destroy him
-		for(int i = 0;i< bob.res.length;++i)
-		{
-			if(a.res[i] != null && bob.res[i] != null)
-			{
-				a.res[i].Quantity += bob.res[i].Quantity;
-			}
-		}
+		MoveStuff(a,bob,bob.ResCount);
 		a.Mass += bob.Mass;
 		a.Selected |= bob.Selected;
 		if(a instanceof EntityRocket && bob instanceof EntityRocket){
@@ -152,6 +211,8 @@ public class World {
 	}
 	public void Reset()
 	{
+		CamraX = 0;
+		CamraY = 0;
 		for(int i = 0;i < 100;++i)
 		{
 			if(objs[i] != null)
@@ -160,8 +221,12 @@ public class World {
 				objs[i] = null;
 			}
 		}
-		Add(new EntityPlanet(0,-100,0));
-		Add(new EntityPlanet(0,100,0));
+		for(int i = 0;i < 50;++i)
+		{
+			float X = (float) ((Math.random() * this.WorldX*2) - this.WorldX);
+			float Y = (float) ((Math.random() * this.WorldY*2) - this.WorldY);
+			Add(new EntityPlanet(0, X,Y));
+		}
 		Add(new EntityPlayer(0,0,100));
 		objs[0].Vel.X = 5;
 		objs[1].Vel.X = -5;
@@ -178,14 +243,47 @@ public class World {
 	}
 	public void RenderInfo(Entity e,Shader shader)
 	{
-		float all = 0;
 		for(int i = 0;i < e.res.length;++i)
 		{
 			if(e.res[i] != null)
 			{
-				if(e.res[i].Quantity == 0)
+				if(e.res[i].Quantity > 0)
 				{
-					GL20.glUniform2f(shader.Scale, 1, ((e.res[i].Quantity/all) / 100));
+					float bars = 8;
+					float barshift = 1/(bars*2);
+					float Height = e.res[i].Quantity;
+					//GL20.glUniform2f(shader.Scale, barshift, 1);
+					//GL20.glUniform2f(shader.Loc,-(i * barshift)-((bars)* barshift),-1 /2);
+					GL20.glUniform2f(shader.Scale, barshift, Math.min(Height,100)/200);
+					GL20.glUniform2f(shader.Loc,((i+1)/bars)-1,(Math.min(Height,100)/200)-1);
+			        if(i == 0)
+			        {
+			        	GL20.glUniform3f(shader.Colour, 1,0,0);
+			        }
+			        if(i == 1)
+			        {
+			        	GL20.glUniform3f(shader.Colour, 0,1,0);
+			        }
+			        if(i == 2)
+			        {
+			        	GL20.glUniform3f(shader.Colour, 0,0,1);
+			        }
+			        if(i == 3)
+			        {
+			        	GL20.glUniform3f(shader.Colour, 1,0,1);
+			        }
+			        if(i == 4)
+			        {
+			        	GL20.glUniform3f(shader.Colour, 1,1,1);
+			        }
+			        //draw
+					GL30.glBindVertexArray(square.VAO);
+					GL20.glEnableVertexAttribArray(0);
+					GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, square.VEA);
+					GL11.glDrawElements(GL11.GL_TRIANGLES, square.IndicesCount, GL11.GL_UNSIGNED_BYTE, 0);
+					GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+					GL20.glDisableVertexAttribArray(0);
+					GL30.glBindVertexArray(0);
 				}
 			}
 		}

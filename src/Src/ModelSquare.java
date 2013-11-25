@@ -3,7 +3,7 @@ package Src;
 public class ModelSquare extends RenderModel {
 	public ModelSquare()
 	{
-		this(1);
+		this(1);//ermergerd
 	}
 	public ModelSquare(float size)
 	{

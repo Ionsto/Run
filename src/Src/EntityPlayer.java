@@ -8,21 +8,18 @@ public class EntityPlayer extends EntityRocket {
 		this.Green = 1;
 	}
 	public EntityPlayer(int id,float x,float y) {
-		super(id,x,y);
-		Speed = 3;
-		this.Green = 1;
+		this(id);
+		this.Pos.X = x;
+		this.Pos.Y = y;
 	}
-	//Control functions
-	public void MoveForward()
+	public void SetUpRes()
 	{
-		
-	}
-	public void MoveBackward()
-	{
-		
-	}
-	public void AddRocket()
-	{
-		
+		//20 To sutain 
+		res[0] = new Resouce();
+		res[0].Name = "Iron";
+		res[0].Quantity = 100;
+		res[1] = new Resouce();
+		res[1].Name = "Hydrogen";
+		res[1].Quantity = 80;
 	}
 }

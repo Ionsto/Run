@@ -40,6 +40,6 @@ public class ModelPlanet extends RenderModel {
 		{
 			return 0;
 		}
-		return getround(loc-max,max);
+		return getround(loc-max,max);//So recursive it can't be run without fear of the world breaking
 	}
 }
