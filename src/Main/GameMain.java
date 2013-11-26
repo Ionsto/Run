@@ -49,9 +49,9 @@ public class GameMain {
 			ContextAttribs contextAtrributes = new ContextAttribs(3,2)
 				.withForwardCompatible(true)
 				.withProfileCore(true);
-				//Display.setFullscreen(true);
+				Display.setFullscreen(true);
 				Display.setTitle("MainLoop?");
-				Display.setDisplayMode(new DisplayMode(Width,Height));
+				//Display.setDisplayMode(new DisplayMode(Width,Height));
 				Display.create(pixelFormat, contextAtrributes);
 				System.out.println(GL11.glGetString(GL11.GL_VERSION));
 				Keyboard.create();
