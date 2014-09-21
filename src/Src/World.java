@@ -92,18 +92,21 @@ public class World {
 							objs[is].Vel.Y = Y;
 							if(force > 50)
 							{
-								int affect = i;
-								int affects = is;
-								if(1 - (objs[is].Mass / objs[i].Mass) > 0.5)//If one mass is rediculesly massive comparitivle
+								if(!(objs[i] instanceof EntityPlayer) && !(objs[is] instanceof EntityPlayer) && !(objs[i] instanceof EntityRocket) && !(objs[is] instanceof EntityRocket))
 								{
-									if(objs[is] instanceof EntityPlayer)
+									int affect = i;
+									int affects = is;
+									if(1 - (objs[is].Mass / objs[i].Mass) > 0.5)//If one mass is rediculesly massive comparitivle
 									{
-										affects = i;
-										affect = is;
+										if(objs[is] instanceof EntityPlayer)
+										{
+											affects = i;
+											affect = is;
+										}
 									}
+									Join(objs[affect],objs[affects]);
+									if(objs[affects]!= null){objs[affects].Destroy(this);}
 								}
-								Join(objs[affect],objs[affects]);
-								if(objs[affects]!= null){objs[affects].Destroy(this);}
 							}
 							else
 							{

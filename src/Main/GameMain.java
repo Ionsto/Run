@@ -213,8 +213,12 @@ public class GameMain {
 							{
 								Vector mouse = GetMouse();
 								float Theta = (float) Math.atan2(Selected.Pos.Y - mouse.Y,Selected.Pos.X - mouse.X);
-								Selected.Vel.X = -(float) (((EntityRocket)Selected).Speed * Math.cos(Theta));
-								Selected.Vel.Y = -(float) (((EntityRocket)Selected).Speed * Math.sin(Theta));
+								float DistanceX = Selected.Pos.X - mouse.X;
+								float DistanceY = Selected.Pos.Y - mouse.Y;
+								float Distance = (float)Math.sqrt((DistanceX * DistanceX) + (DistanceY * DistanceY));
+								float Strength = Math.min(Distance,100) / 100;
+								Selected.Vel.X = -(float) (((EntityRocket)Selected).Speed * Strength * Math.cos(Theta));
+								Selected.Vel.Y = -(float) (((EntityRocket)Selected).Speed * Strength * Math.sin(Theta));
 								Selected.res[1].Quantity -= 5;
 								Selected.ResCount -= 5;
 							}
